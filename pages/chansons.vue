@@ -20,7 +20,7 @@
         class="p-4 border rounded-lg cursor-pointer hover:bg-gray-50"
         @click="navigateTo(`/chanson/${song.id}`)"
       >
-        <h2 class="text-xl font-semibold">{{ song.title }}</h2>
+        <p class="text-xl font-semibold">{{ song.name }}</p>
         <p class="text-gray-600">{{ song.artist }}</p>
       </div>
     </div>
@@ -39,7 +39,6 @@ const { data, pending, error } = await useAsyncData('songs', async () => {
   if (cachedData) {
     return cachedData
   }
-
   // If not in cache, fetch from Supabase
   const { data } = await client.rpc('get_songs')
   

@@ -52,9 +52,8 @@ const { data: song, pending, error } = await useAsyncData(
     // Try to get from cache first
     const cachedData = await getCachedData(`song-${route.params.id}`)
     if (cachedData) {
-      return cachedData
+        return cachedData
     }
-
     // If not in cache, fetch from Supabase
     const { data, error } = await client
       .rpc('get_song_data', {

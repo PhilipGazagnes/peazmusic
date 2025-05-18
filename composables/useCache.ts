@@ -5,7 +5,7 @@ export const useCache = () => {
     try {
       const redis = createRedisClient()
       const cached = await redis.get(key)
-      return cached ? JSON.parse(cached as string) : null
+      return cached || null
     } catch (error) {
       console.error('Redis error:', error)
       return null
@@ -15,7 +15,7 @@ export const useCache = () => {
   const setCachedData = async (key: string, data: any, ttl: number = 3600) => {
     try {
       const redis = createRedisClient()
-      await redis.set(key, JSON.stringify(data), { ex: ttl })
+      await redis.set(key, data, { ex: ttl })
     } catch (error) {
       console.error('Redis error:', error)
     }
