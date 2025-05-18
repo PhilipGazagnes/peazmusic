@@ -20,21 +20,32 @@
         class="p-4 border rounded-lg cursor-pointer hover:bg-gray-50"
         @click="navigateTo(`/chanson/${song.id}`)"
       >
-        <p class="text-lg font-semibold">{{ song.name }}</p>
+        <h2 class="text-xl font-semibold">{{ song.title }}</h2>
         <p class="text-gray-600">{{ song.artist }}</p>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
+import { useCache } from '~/composables/useCache'
+
 const client = useSupabaseClient()
+const { getCachedData, setCachedData } = useCache()
+
 const { data, pending, error } = await useAsyncData('songs', async () => {
+  // Try to get from cache first
+  const cachedData = await getCachedData('songs')
+  if (cachedData) {
+    return cachedData
+  }
+
+  // If not in cache, fetch from Supabase
   const { data } = await client.rpc('get_songs')
+  
+  // Cache the data for 1 hour
+  await setCachedData('songs', data, 3600)
+  
   return data
 })
-
-definePageMeta({
-  title: 'Chansons'
-})
-</script> 
+</script>

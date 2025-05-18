@@ -12,25 +12,17 @@
   
       <!-- Song details -->
       <div v-else-if="song" class="max-w-2xl mx-auto">
-        <NuxtLink to="/" class="text-blue-500 hover:underline mb-4 inline-block">
+        <NuxtLink to="/chansons" class="text-blue-500 hover:underline mb-4 inline-block">
           ← Retour à la liste
         </NuxtLink>
         
         <div class="bg-white rounded-lg shadow-md p-6">
-          {{ song }}
-            <h1 class="text-3xl font-bold mb-4">{{ song.title }}</h1>
+          <h1 class="text-3xl font-bold mb-4">{{ song.name }}</h1>
           <p class="text-xl text-gray-600 mb-6">{{ song.artist }}</p>
           
           <!-- Add more song details here -->
           <div class="space-y-4">
-            <div v-if="song.album" class="flex items-center">
-              <span class="font-semibold w-24">Album:</span>
-              <span>{{ song.album }}</span>
-            </div>
-            <div v-if="song.year" class="flex items-center">
-              <span class="font-semibold w-24">Année:</span>
-              <span>{{ song.year }}</span>
-            </div>
+            {{ song }}
             <!-- Add more fields as needed -->
           </div>
         </div>
@@ -46,21 +38,35 @@
     </div>
   </template>
   
-  <script setup>
-  const route = useRoute()
-  const client = useSupabaseClient()
-  
-  // Fetch the specific song
-  const { data: song, pending, error } = await useAsyncData(
-    `song-${route.params.id}`,
-    async () => {
-      const { data, error } = await client
-        .rpc('get_song_data', {
-            song_id: route.params.id
-        })
-      
-      if (error) throw error
-      return data
+<script setup>
+import { useCache } from '~/composables/useCache'
+
+const route = useRoute()
+const client = useSupabaseClient()
+const { getCachedData, setCachedData } = useCache()
+
+// Fetch the specific song
+const { data: song, pending, error } = await useAsyncData(
+  `song-${route.params.id}`,
+  async () => {
+    // Try to get from cache first
+    const cachedData = await getCachedData(`song-${route.params.id}`)
+    if (cachedData) {
+      return cachedData
     }
-  )
-  </script>
+
+    // If not in cache, fetch from Supabase
+    const { data, error } = await client
+      .rpc('get_song_data', {
+        song_id: route.params.id,
+      })
+    
+    if (error) throw error
+
+    // Cache the data for 1 hour
+    await setCachedData(`song-${route.params.id}`, data, 3600)
+    
+    return data
+  }
+)
+</script>

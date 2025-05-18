@@ -16,5 +16,5 @@ export default defineNuxtConfig({
   ],
   supabase: {
     redirect: false  // This will disable the automatic redirect to login
-  }
+  },
 })
