@@ -12,5 +12,9 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   modules: [
     '@nuxt/eslint',
+    '@nuxtjs/supabase',
   ],
+  supabase: {
+    redirect: false  // This will disable the automatic redirect to login
+  }
 })

@@ -1,3 +1,9 @@
+<script setup lang="ts">
+definePageMeta({
+  title: 'Peaz | Live music & DJ | Hérault (34), France'
+})
+</script> 
+
 <template>
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold text-gray-900 mb-4">
@@ -11,9 +17,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-definePageMeta({
-  title: 'Peaz | Live music & DJ | Hérault (34), France'
-})
-</script> 
